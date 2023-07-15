@@ -434,7 +434,7 @@
     <value>显示传送装置</value>
   </data>
   <data name="pnDisplay Potential Accursed Hoard Coffer Locations" xml:space="preserve">
-    <value>显示潜在准确的埋藏的宝藏位置</value>
+    <value>显示潜在埋藏的宝藏位置</value>
   </data>
   <data name="pnDisplay Potential Accursed Hoard Coffer Locations Help" xml:space="preserve">
     <value>显示发现埋藏的宝藏的任何位置。</value>
@@ -443,7 +443,7 @@
     <value>显示潜在陷阱位置</value>
   </data>
   <data name="pnDisplay Potential Trap Locations Help" xml:space="preserve">
-    <value>显示不可见楼层的陷阱的潜在位置</value>
+    <value>显示不可见陷阱的潜在位置</value>
   </data>
   <data name="pnDraw Traps Filled" xml:space="preserve">
     <value>陷阱绘制填充</value>
@@ -452,7 +452,7 @@
     <value>当使用魔陶器：感知宝藏时，隐藏埋藏的宝藏位置</value>
   </data>
   <data name="pnHide Accursed Hoard Locations on Intuition Use Help" xml:space="preserve">
-    <value>使用 魔陶器：感知宝藏 时，禁用潜在准确的埋藏的宝藏位置绘制，直到找到埋藏的宝藏。</value>
+    <value>使用 魔陶器：感知宝藏 时，禁用潜在埋藏的宝藏位置绘制，直到找到埋藏的宝藏。</value>
   </data>
   <data name="pnHide Traps on Safety/Sight Use" xml:space="preserve">
     <value>使用全景或咒印解除时隐藏陷阱</value>
