@@ -16,7 +16,7 @@
     <DebugType>portable</DebugType>
     <PathMap Condition="$(SolutionDir) != ''">$(SolutionDir)=X:\</PathMap>
     <GitVersion>false</GitVersion>
-    <Version>4.8.0.2</Version>
+    <Version>4.8.0.3</Version>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <OutputPath>dist</OutputPath>
@@ -54,7 +54,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\moewcorp\ECommons\ECommons\ECommons.csproj" />
     <ProjectReference Include="..\Pal.Common\Pal.Common.csproj" />
-    <ProjectReference Include="..\punishLib\PunishLib\PunishLib.csproj" />
+    <ProjectReference Include="..\PunishLib\PunishLib\PunishLib.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Protobuf Include="..\Pal.Common\Protos\account.proto" Link="Protos\account.proto" GrpcServices="Client" Access="Internal" />
@@ -112,10 +112,7 @@
   </Target>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties Reactor_Commands="" Reactor_Configuration="Release" Reactor_Deploy="1" Reactor_Enabled="1" Reactor_Output="&lt;AssemblyLocation&gt;\&lt;AssemblyFileName&gt;" Reactor_Project="" />
+      <UserProperties Reactor_Commands="" Reactor_Configuration="Release" Reactor_Deploy="0" Reactor_Enabled="0" Reactor_Output="&lt;AssemblyLocation&gt;\&lt;AssemblyFileName&gt;" Reactor_Project="" />
     </VisualStudio>
   </ProjectExtensions>
-  <Target Name="ReactorCall" AfterTargets="Compile">
-    <Exec Command="$(ReactorLocation) -file &quot;$(ProjectDir)$(IntermediateOutputPath)$(TargetFileName)&quot; -targetfile &quot;$(ProjectDir)$(IntermediateOutputPath)$(TargetFileName)&quot;" Condition="'$(ConfigurationName)' == 'Release' " />
-  </Target>
 </Project>
