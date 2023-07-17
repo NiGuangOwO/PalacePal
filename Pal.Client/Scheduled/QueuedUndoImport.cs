@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
-using Pal.Client.Configuration;
 using Pal.Client.DependencyInjection;
-using Pal.Client.Floors;
 using Pal.Client.Windows;
-using Pal.Common;
 
 namespace Pal.Client.Scheduled
 {

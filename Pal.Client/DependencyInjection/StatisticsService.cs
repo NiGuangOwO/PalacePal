@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Dalamud.Game.Gui;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using Pal.Client.Configuration;
-using Pal.Client.Extensions;
 using Pal.Client.Net;
 using Pal.Client.Properties;
 using Pal.Client.Windows;

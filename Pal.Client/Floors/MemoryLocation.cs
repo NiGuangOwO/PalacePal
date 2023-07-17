@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Numerics;
-using Pal.Client.Rendering;
 using Pal.Common;
 using Palace;
 using static Pal.Client.Rendering.SplatoonRenderer;

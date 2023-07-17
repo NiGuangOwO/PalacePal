@@ -1,10 +1,5 @@
-﻿using System;
-using Dalamud.Game.Gui;
-using Dalamud.Logging;
-using Dalamud.Plugin;
+﻿using Dalamud.Plugin;
 using Microsoft.Extensions.Logging;
-using Pal.Client.Extensions;
-using Pal.Client.Properties;
 
 namespace Pal.Client.DependencyInjection
 {

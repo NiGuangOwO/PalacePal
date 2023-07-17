@@ -1,6 +1,4 @@
-﻿using System.Reflection.Metadata;
-using Dalamud.Logging;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 
 namespace Pal.Client.Scheduled
 {

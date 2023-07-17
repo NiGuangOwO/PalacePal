@@ -1,12 +1,8 @@
 ﻿using ECommons;
-using ECommons.DalamudServices;
 using ECommons.SplatoonAPI;
 using Pal.Common;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Pal.Client
 {

@@ -1,7 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using Pal.Client.Configuration;
-using Pal.Client.DependencyInjection;
-using Pal.Client.Floors;
 using Pal.Client.Rendering;
 
 namespace Pal.Client.Scheduled

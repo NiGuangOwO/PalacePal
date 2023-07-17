@@ -7,10 +7,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Dalamud.Game;
-using Dalamud.Game.ClientState;
 using Dalamud.Game.Command;
-using Dalamud.Game.Gui;
 using Pal.Client.Properties;
 using ECommons;
 using ECommons.DalamudServices;
@@ -19,7 +16,6 @@ using Microsoft.Extensions.Logging;
 using Pal.Client.Commands;
 using Pal.Client.Configuration;
 using Pal.Client.DependencyInjection;
-using PunishLib;
 using ECommons.Configuration;
 using ECommons.Schedulers;
 
@@ -34,12 +30,6 @@ namespace Pal.Client
     {
         private readonly CancellationTokenSource _initCts = new();
 
-        private  DalamudPluginInterface _pluginInterface;
-        private  CommandManager _commandManager;
-        private  ClientState _clientState;
-        private  ChatGui _chatGui;
-        private  Framework _framework;
-
         private readonly TaskCompletionSource<IServiceScope> _rootScopeCompletionSource = new();
         private ELoadState _loadState = ELoadState.Initializing;
 
@@ -51,40 +41,52 @@ namespace Pal.Client
 
         internal static Plugin P = null!;
         internal AdditionalConfiguration Config;
-
-        public Plugin(
-            DalamudPluginInterface pluginInterface,
-            CommandManager commandManager,
-            ClientState clientState,
-            ChatGui chatGui,
-            Framework framework)
+        private bool isDev = false;
+        public Plugin(DalamudPluginInterface pluginInterface)
         {
             P = this;
             ECommonsMain.Init(pluginInterface, this, Module.SplatoonAPI, Module.DalamudReflector);
-            PunishLibMain.Init(pluginInterface, this);
+#if DEBUG
             new TickScheduler(delegate
             {
                 Config = EzConfig.Init<AdditionalConfiguration>(); // TODO temp solution, move it to main config later (maybe)
-                _pluginInterface = pluginInterface;
-                _commandManager = commandManager;
-                _clientState = clientState;
-                _chatGui = chatGui;
-                _framework = framework;
 
                 // set up the current UI language before creating anything
-                Localization.Culture = new CultureInfo(_pluginInterface.UiLanguage);
+                Localization.Culture = new CultureInfo(Svc.PluginInterface.UiLanguage);
 
-                _commandManager.AddHandler("/pal", new CommandInfo(OnCommand)
+                Svc.Commands.AddHandler("/pal", new CommandInfo(OnCommand)
                 {
                     HelpMessage = Localization.Command_pal_HelpText
                 });
-
-                // Using TickScheduler requires ECommons to at least be partially initialized
-                // ECommonsMain.Dispose leaves this untouched.
-                Svc.Init(pluginInterface);
-
                 Task.Run(async () => await CreateDependencyContext());
             });
+#else
+            if (pluginInterface.IsDev || !pluginInterface.SourceRepository.Contains("NiGuangOwO/DalamudPlugins/main/pluginmaster.json"))
+            {
+                isDev = true;
+                Svc.Chat.PrintError("[Palace Pal]为防止闲鱼小店倒卖插件，请通过仓库链接在线安装!");
+                Svc.Chat.PrintError("[Palace Pal]如果你是花钱买的，赶紧退款吧，人傻钱多当我没说");
+                Svc.Chat.PrintError($"[Palace Pal]插件安装仓库: {Svc.PluginInterface.SourceRepository} ,非本插件汉化者本人仓库!");
+            }
+            else
+            {
+                new TickScheduler(delegate
+                {
+                    Config = EzConfig.Init<AdditionalConfiguration>(); // TODO temp solution, move it to main config later (maybe)
+
+                    // set up the current UI language before creating anything
+                    Localization.Culture = new CultureInfo(Svc.PluginInterface.UiLanguage);
+
+                    Svc.Commands.AddHandler("/pal", new CommandInfo(OnCommand)
+                    {
+                        HelpMessage = Localization.Command_pal_HelpText
+                    });
+
+                    Task.Run(async () => await CreateDependencyContext());
+                });
+            }
+#endif
+            //PunishLibMain.Init(pluginInterface, this);
         }
 
         public string Name => Localization.Palace_Pal;
@@ -93,7 +95,7 @@ namespace Pal.Client
         {
             try
             {
-                _dependencyInjectionContext = _pluginInterface.Create<DependencyInjectionContext>(this)
+                _dependencyInjectionContext = Svc.PluginInterface.Create<DependencyInjectionContext>(this)
                                               ?? throw new Exception("Could not create DI root context class");
                 var serviceProvider = _dependencyInjectionContext.BuildServiceContainer();
                 _initCts.Token.ThrowIfCancellationRequested();
@@ -105,12 +107,12 @@ namespace Pal.Client
                 var loader = _rootScope.ServiceProvider.GetRequiredService<DependencyContextInitializer>();
                 await loader.InitializeAsync(_initCts.Token);
 
-                await _framework.RunOnFrameworkThread(() =>
+                await Svc.Framework.RunOnFrameworkThread(() =>
                 {
-                    _pluginInterface.UiBuilder.Draw += Draw;
-                    _pluginInterface.UiBuilder.OpenConfigUi += OpenConfigUi;
-                    _pluginInterface.LanguageChanged += LanguageChanged;
-                    _clientState.Login += Login;
+                    Svc.PluginInterface.UiBuilder.Draw += Draw;
+                    Svc.PluginInterface.UiBuilder.OpenConfigUi += OpenConfigUi;
+                    Svc.PluginInterface.LanguageChanged += LanguageChanged;
+                    Svc.ClientState.Login += Login;
                 });
                 _rootScopeCompletionSource.SetResult(_rootScope);
                 _loadState = ELoadState.Loaded;
@@ -130,7 +132,7 @@ namespace Pal.Client
                 _rootScopeCompletionSource.SetException(e);
                 _logger.LogError(e, "Async load failed");
                 ShowErrorOnLogin(() =>
-                    new Chat(_chatGui).Error(string.Format(Localization.Error_LoadFailed,
+                    new Chat(Svc.Chat).Error(string.Format(Localization.Error_LoadFailed,
                         $"{e.GetType()} - {e.Message}")));
 
                 _loadState = ELoadState.Error;
@@ -139,7 +141,7 @@ namespace Pal.Client
 
         private void ShowErrorOnLogin(Action? loginAction)
         {
-            if (_clientState.IsLoggedIn)
+            if (Svc.ClientState.IsLoggedIn)
             {
                 loginAction?.Invoke();
                 _loginAction = null;
@@ -226,20 +228,24 @@ namespace Pal.Client
 
         public void Dispose()
         {
-            _commandManager.RemoveHandler("/pal");
-
-            if (_loadState == ELoadState.Loaded)
+            if (!isDev)
             {
-                _pluginInterface.UiBuilder.Draw -= Draw;
-                _pluginInterface.UiBuilder.OpenConfigUi -= OpenConfigUi;
-                _pluginInterface.LanguageChanged -= LanguageChanged;
-                _clientState.Login -= Login;
-            }
+                Svc.Commands.RemoveHandler("/pal");
 
-            _initCts.Cancel();
-            _rootScope?.Dispose();
-            _dependencyInjectionContext?.Dispose();
-            PunishLibMain.Dispose();
+                if (_loadState == ELoadState.Loaded)
+                {
+                    Svc.PluginInterface.UiBuilder.Draw -= Draw;
+                    Svc.PluginInterface.UiBuilder.OpenConfigUi -= OpenConfigUi;
+                    Svc.PluginInterface.LanguageChanged -= LanguageChanged;
+                    Svc.ClientState.Login -= Login;
+                }
+
+                _initCts.Cancel();
+                _rootScope?.Dispose();
+                _dependencyInjectionContext?.Dispose();
+            }
+            //PunishLibMain.Dispose();
+            ECommonsMain.Dispose();
         }
 
         private enum ELoadState

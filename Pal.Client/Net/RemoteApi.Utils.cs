@@ -1,9 +1,8 @@
-﻿using System;
-using Dalamud.Logging;
-using Grpc.Core;
+﻿using Grpc.Core;
 using System.Net.Security;
-using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.Logging;
+using System.Security.Cryptography.X509Certificates;
+using System;
 
 namespace Pal.Client.Net
 {

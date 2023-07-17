@@ -1,7 +1,5 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using Pal.Client.Configuration;
 using Pal.Client.Scheduled;
 using Pal.Common;
 

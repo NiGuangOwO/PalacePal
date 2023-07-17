@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
-using Dalamud.Logging;
 using Dalamud.Plugin;
 using ImGuiNET;
 using Microsoft.Extensions.DependencyInjection;
