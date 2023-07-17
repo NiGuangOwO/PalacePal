@@ -494,7 +494,7 @@ namespace Pal.Client.Windows
         internal void UpdateLastImport()
         {
             _lastImportCts?.Cancel();
-            CancellationTokenSource cts = new CancellationTokenSource();
+            CancellationTokenSource cts = new();
             _lastImportCts = cts;
 
             Task.Run(async () =>

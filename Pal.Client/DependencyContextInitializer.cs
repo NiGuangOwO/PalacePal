@@ -94,7 +94,7 @@ namespace Pal.Client
             if (paths.Length == 0)
                 return;
 
-            Regex backupRegex = new Regex(@"backup-([\d\-]{10})\.data\.sqlite3", RegexOptions.Compiled);
+            Regex backupRegex = new(@"backup-([\d\-]{10})\.data\.sqlite3", RegexOptions.Compiled);
             List<(DateTime Date, string Path)> backupFiles = new();
             foreach (string path in paths)
             {

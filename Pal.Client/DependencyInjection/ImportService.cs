@@ -51,7 +51,7 @@ namespace Pal.Client.DependencyInjection
                 dbContext.Imports.RemoveRange(dbContext.Imports.Where(x => x.RemoteUrl == import.ServerUrl).ToList());
                 dbContext.SaveChanges();
 
-                ImportHistory importHistory = new ImportHistory
+                ImportHistory importHistory = new()
                 {
                     Id = Guid.Parse(import.ExportId),
                     RemoteUrl = import.ServerUrl,
@@ -73,7 +73,7 @@ namespace Pal.Client.DependencyInjection
                         .ToList();
                     foreach (var exportLocation in floor.Objects)
                     {
-                        PersistentLocation persistentLocation = new PersistentLocation
+                        PersistentLocation persistentLocation = new()
                         {
                             Type = ToMemoryType(exportLocation.Type),
                             Position = new Vector3(exportLocation.X, exportLocation.Y, exportLocation.Z),
@@ -89,7 +89,7 @@ namespace Pal.Client.DependencyInjection
                             continue;
                         }
 
-                        ClientLocation clientLocation = new ClientLocation
+                        ClientLocation clientLocation = new()
                         {
                             TerritoryType = (ushort)territoryType,
                             Type = ToClientLocationType(exportLocation.Type),

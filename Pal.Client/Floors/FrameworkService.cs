@@ -285,21 +285,18 @@ namespace Pal.Client.Floors
 
         private uint DetermineColor(PersistentLocation location, IReadOnlyList<PersistentLocation> visibleLocations)
         {
-            switch (location.Type)
+            return location.Type switch
             {
-                case MemoryLocation.EType.Trap
-                    when _territoryState.PomanderOfSight == PomanderState.Inactive ||
-                         !_configuration.DeepDungeons.Traps.OnlyVisibleAfterPomander ||
-                         visibleLocations.Any(x => x == location):
-                    return P.Config.TrapColor.ToUint();
-                case MemoryLocation.EType.Hoard
-                    when _territoryState.PomanderOfIntuition == PomanderState.Inactive ||
-                         !_configuration.DeepDungeons.HoardCoffers.OnlyVisibleAfterPomander ||
-                         visibleLocations.Any(x => x == location):
-                    return _configuration.DeepDungeons.HoardCoffers.Color;
-                default:
-                    return RenderData.ColorInvisible;
-            }
+                MemoryLocation.EType.Trap
+                                    when _territoryState.PomanderOfSight == PomanderState.Inactive ||
+                                         !_configuration.DeepDungeons.Traps.OnlyVisibleAfterPomander ||
+                                         visibleLocations.Any(x => x == location) => P.Config.TrapColor.ToUint(),
+                MemoryLocation.EType.Hoard
+                                    when _territoryState.PomanderOfIntuition == PomanderState.Inactive ||
+                                         !_configuration.DeepDungeons.HoardCoffers.OnlyVisibleAfterPomander ||
+                                         visibleLocations.Any(x => x == location) => _configuration.DeepDungeons.HoardCoffers.Color,
+                _ => RenderData.ColorInvisible,
+            };
         }
 
         private uint DetermineColor(EphemeralLocation location)
@@ -328,7 +325,7 @@ namespace Pal.Client.Floors
                 element.Delegate.overlayBGColor = 0;
                 element.Delegate.overlayVOffset = 0.6f;
                 element.Delegate.overlayFScale = P.Config.OverlayFScale;
-                element.Delegate.overlayText = " Gold Treasure Coffer";
+                element.Delegate.overlayText = " 金宝箱";
                 element.Delegate.overlayTextColor = color;
                 element.Delegate.radius = 1f;
                 element.Delegate.Filled = false;
@@ -355,7 +352,7 @@ namespace Pal.Client.Floors
                 element.Delegate.overlayBGColor = 0;
                 element.Delegate.overlayVOffset = 0.6f;
                 element.Delegate.overlayFScale = P.Config.OverlayFScale;
-                element.Delegate.overlayText = " Silver Treasure Coffer";
+                element.Delegate.overlayText = " 银宝箱";
                 element.Delegate.overlayTextColor = color;
                 element.Delegate.radius = 1f;
                 element.Delegate.Filled = false;

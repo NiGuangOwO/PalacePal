@@ -91,7 +91,7 @@ namespace Pal.Client.Rendering
         public SplatoonElement CreateElement(MemoryLocation.EType type, Vector3 pos, uint color, bool fill = false)
         {
             MarkerConfig config = MarkerConfig.ForType(type);
-            Element element = new Element(ElementType.CircleAtFixedCoordinates)
+            Element element = new(ElementType.CircleAtFixedCoordinates)
             {
                 refX = pos.X,
                 refY = pos.Z, // z and y are swapped

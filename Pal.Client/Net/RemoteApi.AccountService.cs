@@ -180,8 +180,8 @@ namespace Pal.Client.Net
 
         private async Task<bool> Connect(CancellationToken cancellationToken)
         {
-            var result = await TryConnect(cancellationToken);
-            return result.Success;
+            var (Success, _) = await TryConnect(cancellationToken);
+            return Success;
         }
 
         public async Task<string> VerifyConnection(CancellationToken cancellationToken = default)
@@ -190,9 +190,9 @@ namespace Pal.Client.Net
 
             _warnedAboutUpgrade = false;
 
-            var connectionResult = await TryConnect(cancellationToken, loggerFactory: _loggerFactory);
-            if (!connectionResult.Success)
-                return string.Format(Localization.ConnectionError_CouldNotConnectToServer, connectionResult.Error);
+            var (Success, Error) = await TryConnect(cancellationToken, loggerFactory: _loggerFactory);
+            if (!Success)
+                return string.Format(Localization.ConnectionError_CouldNotConnectToServer, Error);
 
             _logger.LogInformation("Connection established, trying to verify auth token");
             var accountClient = new AccountService.AccountServiceClient(_channel);
