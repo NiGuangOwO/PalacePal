@@ -422,10 +422,10 @@
     <value>铜宝箱颜色</value>
   </data>
   <data name="pnMimic Coffer color" xml:space="preserve">
-    <value>Bronze Mimic Trap Coffer color</value>
+    <value>青铜宝箱拟态怪陷阱颜色</value>
   </data>
   <data name="pnMimic Help" xml:space="preserve">
-    <value>Only mimics in bronze chests on early floor sets can be detected.</value>
+    <value>只能检测到低层数中青铜宝箱中的拟态怪。</value>
   </data>
   <data name="pnCoffers" xml:space="preserve">
     <value>宝箱</value>
@@ -485,9 +485,9 @@
     <value>陷阱</value>
   </data>
   <data name="pnText overlay" xml:space="preserve">
-    <value>Text overlay</value>
+    <value>文字覆盖层</value>
   </data>
   <data name="pnExit Outline Colour" xml:space="preserve">
-    <value>Exit Outline Colour</value>
+    <value>出口轮廓颜色</value>
   </data>
 </root>
