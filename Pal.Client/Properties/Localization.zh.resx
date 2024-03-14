@@ -470,7 +470,7 @@
     <value>激活时高亮显示</value>
   </data>
   <data name="pnHighlight When Activated Help" xml:space="preserve">
-    <value>By default the Passage will be marked only with an outline and text label, enabling this will also enable a bright green fill.</value>
+    <value>默认情况下，通过将只标记为黄色的轮廓和文字标签，启用此功能也将启用亮绿填充。</value>
   </data>
   <data name="pnPassages" xml:space="preserve">
     <value>传送装置</value>
