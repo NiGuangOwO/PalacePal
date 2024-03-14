@@ -15,6 +15,7 @@ using Pal.Client.Floors;
 using Pal.Common;
 using ECommons.DalamudServices;
 using Dalamud.Logging;
+using Dalamud.Plugin.Services;
 
 namespace Pal.Client.Rendering
 {
@@ -24,7 +25,7 @@ namespace Pal.Client.Rendering
 
         private readonly ILogger<SplatoonRenderer> _logger;
         private readonly DebugState _debugState;
-        private readonly ClientState _clientState;
+        private readonly IClientState _clientState;
         private readonly Chat _chat;
 
         public SplatoonRenderer(
@@ -32,7 +33,7 @@ namespace Pal.Client.Rendering
             DalamudPluginInterface pluginInterface,
             IDalamudPlugin dalamudPlugin,
             DebugState debugState,
-            ClientState clientState,
+            IClientState clientState,
             Chat chat)
         {
             _logger = logger;
@@ -150,7 +151,7 @@ namespace Pal.Client.Rendering
                             _chat.Error(
                                 $"Splatoon is installed under the plugin name '{pluginName}', which is incompatible with the Splatoon API.");
                             _chat.Message(
-                                "You need to install Splatoon from the official repository at https://github.com/NightmareXIV/MyDalamudPlugins.");
+                                "You need to install Splatoon from the official repository at https://puni.sh/plugin/Splatoon.");
                             return;
                         }
                     }
@@ -174,6 +175,10 @@ namespace Pal.Client.Rendering
             ResetLayer(ELayer.RegularCoffers);
             ResetLayer(ELayer.Test);
 
+            // Clean up the extra elements as well
+            Splatoon.RemoveDynamicElements("PalacePal.ExitElement");
+            Splatoon.RemoveDynamicElements("PalacePal.BronzeTreasure");
+
             //ECommonsMain.Dispose();
         }
 
@@ -181,28 +186,34 @@ namespace Pal.Client.Rendering
         {
             const string Name = "PalacePal.ExitElement";
             Splatoon.RemoveDynamicElements(Name);
-            PluginLog.Debug($"Removing exit objects");
             if (Plugin.P.Config.DisplayExit)
             {
                 if (Enum.GetValues<ETerritoryType>().Contains((ETerritoryType)Svc.ClientState.TerritoryType))
                 {
-                    PluginLog.Debug($"Adding exit objects");
                     uint[] IDs = new uint[] { 2007188, 2009507, 2013287 };
                     foreach (var x in IDs)
                     {
-                        PluginLog.Debug($"Adding exit object {x}");
-                        if (P.Config.DisplayExit)
+                        Splatoon.AddDynamicElement(Name, new Element(ElementType.CircleRelativeToActorPosition)
+                        {
+                            radius = 2.0f,
+                            color = Plugin.P.Config.ExitColor.ToUint(),
+                            overlayVOffset = 0.76f,
+                            overlayText = Plugin.P.Config.ExitText ? "Passage" : "",
+                            overlayFScale = P.Config.OverlayFScale,
+                            refActorComparisonType = RefActorComparisonType.DataID,
+                            refActorDataID = x,
+                            includeHitbox = false,
+                        }, 0);
+
+                        if (Plugin.P.Config.DisplayExitOnlyActive)
                         {
                             Splatoon.AddDynamicElement(Name, new Element(ElementType.CircleRelativeToActorPosition)
                             {
-                                radius = 2.1f,
-                                color = 3355498751,
-                                overlayVOffset = 0.76f,
-                                overlayText = "传送装置",
-                                overlayFScale = P.Config.OverlayFScale,
-                                refActorComparisonType = RefActorComparisonType.DataID,
+                                radius = 2.0f,
+                                color = 1684471552,
                                 refActorDataID = x,
-                                includeHitbox = true,
+                                includeHitbox = false,
+                                Filled = true,
                                 refActorComparisonAnd = true,
                                 refActorObjectEffectData1 = 4,
                                 refActorObjectEffectData2 = 8,
