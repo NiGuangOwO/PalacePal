@@ -16,6 +16,7 @@ using Pal.Common;
 using ECommons.DalamudServices;
 using Dalamud.Logging;
 using Dalamud.Plugin.Services;
+using ImGuiNET;
 
 namespace Pal.Client.Rendering
 {
@@ -196,9 +197,9 @@ namespace Pal.Client.Rendering
                         Splatoon.AddDynamicElement(Name, new Element(ElementType.CircleRelativeToActorPosition)
                         {
                             radius = 2.0f,
-                            color = Plugin.P.Config.ExitColor.ToUint(),
+                            color = ImGui.GetColorU32(Plugin.P.Config.ExitColor),
                             overlayVOffset = 0.76f,
-                            overlayText = Plugin.P.Config.ExitText ? "Passage" : "",
+                            overlayText = Plugin.P.Config.ExitText ? "传送装置" : "",
                             overlayFScale = P.Config.OverlayFScale,
                             refActorComparisonType = RefActorComparisonType.DataID,
                             refActorDataID = x,

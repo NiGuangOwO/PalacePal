@@ -1,15 +1,15 @@
 ﻿using Grpc.Net.Client;
 using Microsoft.Extensions.Logging;
-using System;
 using Pal.Client.Configuration;
 using Pal.Client.DependencyInjection;
+using System;
 
 namespace Pal.Client.Net
 {
     internal sealed partial class RemoteApi : IDisposable
     {
 #if DEBUG
-        public const string RemoteUrl = "https://deep-dungeon.api.puni.sh";
+        public static string RemoteUrl { get; } = "https://deep-dungeon.api.puni.sh";
 #else
         public const string RemoteUrl = "https://deep-dungeon.api.puni.sh";
 #endif

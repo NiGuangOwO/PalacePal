@@ -1,24 +1,25 @@
-﻿using Dalamud.Interface.Windowing;
+﻿using Dalamud.Game.Command;
+using Dalamud.Interface.Windowing;
 using Dalamud.Plugin;
+using Dalamud.Plugin.Services;
+using ECommons;
+using ECommons.Configuration;
+using ECommons.DalamudServices;
+using ECommons.Schedulers;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Pal.Client.Commands;
+using Pal.Client.Configuration;
+using Pal.Client.DependencyInjection;
+using Pal.Client.Properties;
 using Pal.Client.Rendering;
+using PunishLib;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Dalamud.Game.Command;
-using Pal.Client.Properties;
-using ECommons;
-using ECommons.DalamudServices;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Pal.Client.Commands;
-using Pal.Client.Configuration;
-using Pal.Client.DependencyInjection;
-using ECommons.Configuration;
-using ECommons.Schedulers;
-using Dalamud.Plugin.Services;
 
 namespace Pal.Client
 {
@@ -31,7 +32,7 @@ namespace Pal.Client
     {
         private readonly CancellationTokenSource _initCts = new();
 
-        private  DalamudPluginInterface _pluginInterface;
+        private DalamudPluginInterface _pluginInterface;
         private ICommandManager _commandManager;
         private IClientState _clientState;
         private IChatGui _chatGui;
@@ -48,7 +49,7 @@ namespace Pal.Client
 
         internal static Plugin P = null!;
         internal AdditionalConfiguration Config;
-
+        private bool isDev = false;
         public Plugin(
             DalamudPluginInterface pluginInterface,
             ICommandManager commandManager,
@@ -58,29 +59,15 @@ namespace Pal.Client
         {
             P = this;
             ECommonsMain.Init(pluginInterface, this, Module.SplatoonAPI, Module.DalamudReflector);
-#if DEBUG
-            new TickScheduler(delegate
-            {
-                Config = EzConfig.Init<AdditionalConfiguration>(); // TODO temp solution, move it to main config later (maybe)
-
-                // set up the current UI language before creating anything
-                Localization.Culture = new CultureInfo(Svc.PluginInterface.UiLanguage);
-
-                Svc.Commands.AddHandler("/pal", new CommandInfo(OnCommand)
-                {
-                    HelpMessage = Localization.Command_pal_HelpText
-                });
-                Task.Run(async () => await CreateDependencyContext());
-            });
-#else
+            PunishLibMain.Init(pluginInterface, "Palace Pal", new AboutPlugin() { Translator = "NiGuangOwO", Afdian = "https://afdian.net/a/NiGuangOwO" });
+#if RELEASE
             if (pluginInterface.IsDev || !pluginInterface.SourceRepository.Contains("NiGuangOwO/DalamudPlugins/main/pluginmaster.json"))
             {
                 isDev = true;
-                Svc.Chat.PrintError("[Palace Pal]为防止闲鱼小店倒卖插件，请通过仓库链接在线安装!");
-                Svc.Chat.PrintError("[Palace Pal]如果你是花钱买的，赶紧退款吧，人傻钱多当我没说");
-                Svc.Chat.PrintError($"[Palace Pal]插件安装仓库: {Svc.PluginInterface.SourceRepository} ,非本插件汉化者本人仓库!");
+                Svc.Framework.Update += Dev;
             }
             else
+#endif
             {
                 new TickScheduler(delegate
                 {
@@ -97,8 +84,17 @@ namespace Pal.Client
                     Task.Run(async () => await CreateDependencyContext());
                 });
             }
-#endif
-            //PunishLibMain.Init(pluginInterface, this);
+        }
+
+        private bool showWarnning = false;
+        private void Dev(IFramework framework)
+        {
+            if (Svc.ClientState.IsLoggedIn && !showWarnning)
+            {
+                showWarnning = true;
+                Svc.Chat.PrintError($"[Palace Pal] 为防止闲鱼小店倒卖插件，请通过仓库链接在线安装!");
+                Svc.Chat.PrintError($"[Palace Pal] 插件安装仓库: {Svc.PluginInterface.SourceRepository} ,非本插件汉化者本人仓库!");
+            }
         }
 
         public string Name => Localization.Palace_Pal;
@@ -240,7 +236,11 @@ namespace Pal.Client
 
         public void Dispose()
         {
-            if (!isDev)
+            if (isDev)
+            {
+                Svc.Framework.Update -= Dev;
+            }
+            else
             {
                 Svc.Commands.RemoveHandler("/pal");
 
@@ -256,7 +256,7 @@ namespace Pal.Client
                 _rootScope?.Dispose();
                 _dependencyInjectionContext?.Dispose();
             }
-            //PunishLibMain.Dispose();
+            PunishLibMain.Dispose();
             ECommonsMain.Dispose();
         }
 

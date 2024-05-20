@@ -325,7 +325,7 @@ namespace Pal.Client.Floors
                     element.Delegate.overlayBGColor = 0;
                     element.Delegate.overlayVOffset = 0.6f;
                     element.Delegate.overlayFScale = P.Config.OverlayFScale;
-                    element.Delegate.overlayText = " Gold Treasure Coffer";
+                    element.Delegate.overlayText = " 金宝箱";
                     element.Delegate.overlayTextColor = color;
                 }
                 element.Delegate.radius = 1f;
@@ -355,7 +355,7 @@ namespace Pal.Client.Floors
                     element.Delegate.overlayBGColor = 0;
                     element.Delegate.overlayVOffset = 0.6f;
                     element.Delegate.overlayFScale = P.Config.OverlayFScale;
-                    element.Delegate.overlayText = " Silver Treasure Coffer";
+                    element.Delegate.overlayText = " 银宝箱";
                     element.Delegate.overlayTextColor = color;
                 }
                 element.Delegate.radius = 1f;

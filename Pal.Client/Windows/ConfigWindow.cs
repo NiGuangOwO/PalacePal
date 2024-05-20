@@ -4,6 +4,7 @@ using Dalamud.Interface.Components;
 using Dalamud.Interface.ImGuiFileDialog;
 using Dalamud.Interface.Windowing;
 using Dalamud.Plugin.Services;
+using Dalamud.Utility;
 using ECommons;
 using ECommons.Configuration;
 using ECommons.ImGuiMethods;
@@ -27,6 +28,7 @@ using System.Linq;
 using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
+using ThreadLoadImageHandler = ECommons.ImGuiMethods.ThreadLoadImageHandler;
 
 namespace Pal.Client.Windows
 {
@@ -34,7 +36,7 @@ namespace Pal.Client.Windows
     {
         private const string WindowId = "###PalPalaceConfig";
 
-        public OpenWindow OpenWindow { get; private set; } = OpenWindow.DeepDungeons;
+        public OpenWindow OpenWindow { get; private set; } = OpenWindow.关于;
 
         private readonly ILogger<ConfigWindow> _logger;
         private readonly WindowSystem _windowSystem;
@@ -168,15 +170,15 @@ namespace Pal.Client.Windows
 
                 if (ImGui.BeginChild($"###PPLeft", regionSize with { Y = topLeftSideHeight }, false, ImGuiWindowFlags.NoDecoration))
                 {
-                    var imagePath = "https://love.puni.sh/resources/palacepal.png";
+                    var imagePath = "https://s3.puni.sh/media/plugin/32/icon-vrl2a8dqi3h.png";
 
                     if (ThreadLoadImageHandler.TryGetTextureWrap(imagePath, out var logo))
                     {
-                        ImGuiEx.ImGuiLineCentered("###Logo", () => { ImGui.Image(logo.ImGuiHandle, new(125f.Scale(), 125f.Scale())); });
+                        ImGuiEx.LineCentered("###Logo", () => { ImGui.Image(logo.ImGuiHandle, new(125f.Scale(), 125f.Scale())); });
                     }
                     else
                     {
-                        ImGuiEx.ImGuiLineCentered("###Logo", () => { ImGui.Dummy(new(125f.Scale(), 125f.Scale())); });
+                        ImGuiEx.LineCentered("###Logo", () => { ImGui.Dummy(new(125f.Scale(), 125f.Scale())); });
                     }
 
                     ImGui.Spacing();
@@ -184,12 +186,13 @@ namespace Pal.Client.Windows
 
                     foreach (var window in Enum.GetValues(typeof(OpenWindow)))
                     {
-                        if ((OpenWindow)window == OpenWindow.None) continue;
-
-                        if ((OpenWindow)window == OpenWindow.Export && !_configuration.HasRoleOnCurrentServer(RemoteApi.RemoteUrl, "export:run"))
+                        if ((OpenWindow)window == OpenWindow.None)
                             continue;
 
-                        if (ImGui.Selectable($"{string.Join(" ", window.ToString().SplitCamelCase())}", OpenWindow == (OpenWindow)window))
+                        if ((OpenWindow)window == OpenWindow.导出 && !_configuration.HasRoleOnCurrentServer(RemoteApi.RemoteUrl, "export:run"))
+                            continue;
+
+                        if (ImGui.Selectable($"{window}", OpenWindow == (OpenWindow)window))
                         {
                             OpenWindow = (OpenWindow)window;
                         }
@@ -205,23 +208,23 @@ namespace Pal.Client.Windows
                 {
                     switch (OpenWindow)
                     {
-                        case OpenWindow.DeepDungeons:
+                        case OpenWindow.深层迷宫:
                             DrawDeepDungeonItemsTab(ref save, ref saveAndClose);
                             break;
-                        case OpenWindow.Community:
+                        case OpenWindow.社区:
                             DrawCommunityTab(ref saveAndClose);
                             break;
-                        case OpenWindow.Import:
+                        case OpenWindow.导入:
                             DrawImportTab();
                             break;
-                        case OpenWindow.Export:
+                        case OpenWindow.导出:
                             DrawExportTab();
                             break;
                         case OpenWindow.Debug:
                             DrawDebugTab();
                             break;
-                        case OpenWindow.About:
-                            AboutTab.Draw(P);
+                        case OpenWindow.关于:
+                            AboutTab.Draw(P.Name);
                             break;
                     }
                 }
@@ -257,9 +260,12 @@ namespace Pal.Client.Windows
             {
                 ImGui.Checkbox(Localization.pnDisplay_Potential_Trap_Locations, ref _trapConfig.Show);
                 ImGuiComponents.HelpMarker(Localization.pnDisplay_Potential_Trap_Locations_Help);
-                Spacing(true); ImGui.ColorEdit4(Localization.pnTrap_Outline_Colour, ref P.Config.TrapColor, ImGuiColorEditFlags.NoInputs);
-                Spacing(true); ImGui.Checkbox(Localization.pnDraw_Traps_Filled, ref _trapConfig.Fill);
-                Spacing(); ImGui.Checkbox(Localization.pnHide_Traps_on_Safety_Sight_Use, ref _trapConfig.OnlyVisibleAfterPomander);
+                Spacing(true);
+                ImGui.ColorEdit4(Localization.pnTrap_Outline_Colour, ref P.Config.TrapColor, ImGuiColorEditFlags.NoInputs);
+                Spacing(true);
+                ImGui.Checkbox(Localization.pnDraw_Traps_Filled, ref _trapConfig.Fill);
+                Spacing();
+                ImGui.Checkbox(Localization.pnHide_Traps_on_Safety_Sight_Use, ref _trapConfig.OnlyVisibleAfterPomander);
                 ImGuiComponents.HelpMarker(Localization.pnHide_Traps_on_Safety_Sight_Use_Help);
                 ImGuiGroup.EndGroupBox();
             }
@@ -269,8 +275,10 @@ namespace Pal.Client.Windows
             {
                 ImGui.Checkbox(Localization.pnDisplay_Potential_Accursed_Hoard_Coffer_Locations, ref _hoardConfig.Show);
                 ImGuiComponents.HelpMarker(Localization.pnDisplay_Potential_Accursed_Hoard_Coffer_Locations_Help);
-                Spacing(true); ImGui.ColorEdit4(Localization.pnAccursed_Hoard_Outline_Colour, ref _hoardConfig.Color, ImGuiColorEditFlags.NoInputs);
-                Spacing(); ImGui.Checkbox(Localization.pnHide_Accursed_Hoard_Locations_on_Intuition_Use, ref _hoardConfig.OnlyVisibleAfterPomander);
+                Spacing(true);
+                ImGui.ColorEdit4(Localization.pnAccursed_Hoard_Outline_Colour, ref _hoardConfig.Color, ImGuiColorEditFlags.NoInputs);
+                Spacing();
+                ImGui.Checkbox(Localization.pnHide_Accursed_Hoard_Locations_on_Intuition_Use, ref _hoardConfig.OnlyVisibleAfterPomander);
                 ImGuiComponents.HelpMarker(Localization.pnHide_Accursed_Hoard_Locations_on_Intuition_Use_Help);
                 ImGuiGroup.EndGroupBox();
             }
@@ -281,9 +289,12 @@ namespace Pal.Client.Windows
                 ImGui.PushID("coffer1");
                 ImGui.Checkbox(Localization.Config_GoldCoffer_Show, ref _goldConfig.Show);
                 ImGuiComponents.HelpMarker(Localization.Config_GoldCoffers_ToolTip);
-                Spacing(true); ImGui.ColorEdit4(Localization.Config_GoldCoffer_Color, ref _goldConfig.Color, ImGuiColorEditFlags.NoInputs);
-                Spacing(true); ImGui.Checkbox(Localization.Config_GoldCoffer_Filled, ref _goldConfig.Fill);
-                Spacing(); ImGui.Checkbox(Localization.pnText_overlay, ref P.Config.GoldText);
+                Spacing(true);
+                ImGui.ColorEdit4(Localization.Config_GoldCoffer_Color, ref _goldConfig.Color, ImGuiColorEditFlags.NoInputs);
+                Spacing(true);
+                ImGui.Checkbox(Localization.Config_GoldCoffer_Filled, ref _goldConfig.Fill);
+                Spacing();
+                ImGui.Checkbox(Localization.pnText_overlay, ref P.Config.GoldText);
                 ImGui.PopID();
 
                 ImGui.Separator();
@@ -291,21 +302,33 @@ namespace Pal.Client.Windows
                 ImGui.PushID("coffer2");
                 ImGui.Checkbox(Localization.Config_SilverCoffer_Show, ref _silverConfig.Show);
                 ImGuiComponents.HelpMarker(Localization.Config_SilverCoffers_ToolTip);
-                Spacing(true); ImGui.ColorEdit4(Localization.Config_SilverCoffer_Color, ref _silverConfig.Color, ImGuiColorEditFlags.NoInputs);
-                Spacing(true); ImGui.Checkbox(Localization.Config_SilverCoffer_Filled, ref _silverConfig.Fill);
-                Spacing(); ImGui.Checkbox(Localization.pnText_overlay, ref P.Config.SilverText);
+                Spacing(true);
+                ImGui.ColorEdit4(Localization.Config_SilverCoffer_Color, ref _silverConfig.Color, ImGuiColorEditFlags.NoInputs);
+                Spacing(true);
+                ImGui.Checkbox(Localization.Config_SilverCoffer_Filled, ref _silverConfig.Fill);
+                Spacing();
+                ImGui.Checkbox(Localization.pnText_overlay, ref P.Config.SilverText);
                 ImGui.PopID();
 
                 ImGui.Separator();
 
                 ImGui.PushID("coffer3");
-                if (ImGui.Checkbox(Localization.pnDisplay_Bronze_Treasure_Coffer_Locations, ref P.Config.BronzeShow)) UpdateRender();
+                if (ImGui.Checkbox(Localization.pnDisplay_Bronze_Treasure_Coffer_Locations, ref P.Config.BronzeShow))
+                    UpdateRender();
                 //ImGuiComponents.HelpMarker(Localization.Config_SilverCoffers_ToolTip);
-                Spacing(true); if (ImGui.ColorEdit4(Localization.pnBronze_Coffer_color, ref P.Config.BronzeColor, ImGuiColorEditFlags.NoInputs)) UpdateRender();
-                Spacing(true); if (ImGui.ColorEdit4(Localization.pnMimic_Coffer_color, ref P.Config.MimicColor, ImGuiColorEditFlags.NoInputs)) UpdateRender();
+                Spacing(true);
+                if (ImGui.ColorEdit4(Localization.pnBronze_Coffer_color, ref P.Config.BronzeColor, ImGuiColorEditFlags.NoInputs))
+                    UpdateRender();
+                Spacing(true);
+                if (ImGui.ColorEdit4(Localization.pnMimic_Coffer_color, ref P.Config.MimicColor, ImGuiColorEditFlags.NoInputs))
+                    UpdateRender();
                 ImGuiComponents.HelpMarker(Localization.pnMimic_Help);
-                Spacing(true); if (ImGui.Checkbox(Localization.Config_SilverCoffer_Filled, ref P.Config.BronzeFill)) UpdateRender();
-                Spacing(); if (ImGui.Checkbox(Localization.pnText_overlay, ref P.Config.BronzeText)) UpdateRender();
+                Spacing(true);
+                if (ImGui.Checkbox(Localization.Config_SilverCoffer_Filled, ref P.Config.BronzeFill))
+                    UpdateRender();
+                Spacing();
+                if (ImGui.Checkbox(Localization.pnText_overlay, ref P.Config.BronzeText))
+                    UpdateRender();
                 ImGui.PopID();
 
                 ImGuiGroup.EndGroupBox();
@@ -315,11 +338,18 @@ namespace Pal.Client.Windows
             ImGuiEx.Text(Localization.pnPassages);
             if (ImGuiGroup.BeginGroupBox())
             {
-                if (ImGui.Checkbox(Localization.pnDisplay_Passages, ref P.Config.DisplayExit)) UpdateRender();
-                Spacing(true); if (ImGui.ColorEdit4(Localization.pnExit_Outline_Colour, ref P.Config.ExitColor, ImGuiColorEditFlags.NoInputs)) UpdateRender();
-                Spacing(true); if (ImGui.Checkbox(Localization.pnHighlight_When_Activated, ref P.Config.DisplayExitOnlyActive)) UpdateRender();
+                if (ImGui.Checkbox(Localization.pnDisplay_Passages, ref P.Config.DisplayExit))
+                    UpdateRender();
+                Spacing(true);
+                if (ImGui.ColorEdit4(Localization.pnExit_Outline_Colour, ref P.Config.ExitColor, ImGuiColorEditFlags.NoInputs))
+                    UpdateRender();
+                Spacing(true);
+                if (ImGui.Checkbox(Localization.pnHighlight_When_Activated, ref P.Config.DisplayExitOnlyActive))
+                    UpdateRender();
                 ImGuiComponents.HelpMarker(Localization.pnHighlight_When_Activated_Help);
-                Spacing(); if (ImGui.Checkbox(Localization.pnText_overlay, ref P.Config.ExitText)) UpdateRender();
+                Spacing();
+                if (ImGui.Checkbox(Localization.pnText_overlay, ref P.Config.ExitText))
+                    UpdateRender();
                 ImGuiGroup.EndGroupBox();
             }
 
@@ -368,18 +398,23 @@ namespace Pal.Client.Windows
             ImGui.BeginDisabled(_configuration.Mode != EMode.Online);
             if (ImGui.Button(Localization.Config_TestConnection))
                 TestConnection();
+            ImGui.EndDisabled();
+
+            ImGui.SameLine();
+            if (ImGui.Button("解决教程：Export failed: Grpc.Core.RpcException: Status(StatusCode=\"Internal\", Detail=\"Error starting gRPC call."))
+            {
+                Util.OpenLink("https://docs.qq.com/doc/DZHFWbEF1bEZnUm5t");
+            }
 
             if (_connectionText != null)
                 ImGui.Text(_connectionText);
 
-            ImGui.EndDisabled();
             ImGui.EndTabItem();
 
         }
 
         private void DrawImportTab()
         {
-
             ImGui.TextWrapped(Localization.Config_ImportExplanation1);
             ImGui.TextWrapped(Localization.Config_ImportExplanation2);
             ImGui.TextWrapped(Localization.Config_ImportExplanation3);
@@ -658,11 +693,11 @@ namespace Pal.Client.Windows
     public enum OpenWindow
     {
         None,
-        DeepDungeons,
-        Community,
-        Import,
-        Export,
+        深层迷宫,
+        社区,
+        导入,
+        导出,
         Debug,
-        About
+        关于
     }
 }

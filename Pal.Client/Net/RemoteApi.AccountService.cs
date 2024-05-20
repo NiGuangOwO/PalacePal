@@ -2,15 +2,15 @@
 using Grpc.Core;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Logging;
+using Pal.Client.Configuration;
+using Pal.Client.Extensions;
+using Pal.Client.Properties;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Pal.Client.Extensions;
-using Pal.Client.Properties;
-using Pal.Client.Configuration;
 
 namespace Pal.Client.Net
 {
@@ -50,6 +50,7 @@ namespace Pal.Client.Net
                 {
                     HttpHandler = new SocketsHttpHandler
                     {
+                        UseProxy = false,
                         ConnectTimeout = TimeSpan.FromSeconds(5),
                         SslOptions = GetSslClientAuthenticationOptions(),
                     },
