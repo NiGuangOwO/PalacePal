@@ -52,6 +52,7 @@ namespace Pal.Client.Net
                     {
                         ConnectTimeout = TimeSpan.FromSeconds(5),
                         SslOptions = GetSslClientAuthenticationOptions(),
+                        UseProxy = false
                     },
                     LoggerFactory = loggerFactory,
                 });

@@ -56,9 +56,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\..\ECommons\ECommons\ECommons.csproj" />
+	  <ProjectReference Include="..\..\PunishLib\PunishLib\PunishLib.csproj" />
 	  <ProjectReference Include="..\Pal.Common\Pal.Common.csproj" />
-	  <ProjectReference Include="..\ECommons\ECommons\ECommons.csproj" />
-	  <ProjectReference Include="..\PunishLib\PunishLib\PunishLib.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -68,7 +68,7 @@
 	</ItemGroup>
 
 	<PropertyGroup>
-		<DalamudLibPath Condition="$([MSBuild]::IsOSPlatform('Windows'))">$(appdata)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>
+		<DalamudLibPath Condition="$([MSBuild]::IsOSPlatform('Windows'))">D:\XIVLauncherCN\Roaming\addon\Hooks\dev\</DalamudLibPath>
 		<DalamudLibPath Condition="$([MSBuild]::IsOSPlatform('Linux'))">$(HOME)/.xlcore/dalamud/Hooks/dev/</DalamudLibPath>
 		<DalamudLibPath Condition="$([MSBuild]::IsOSPlatform('OSX'))">$(HOME)/Library/Application Support/XIV on Mac/dalamud/Hooks/dev/</DalamudLibPath>
 		<DalamudLibPath Condition="$(DALAMUD_HOME) != ''">$(DALAMUD_HOME)/</DalamudLibPath>

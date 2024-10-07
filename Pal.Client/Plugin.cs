@@ -59,7 +59,7 @@ namespace Pal.Client
         {
             P = this;
             ECommonsMain.Init(pluginInterface, this, Module.SplatoonAPI, Module.DalamudReflector);
-            PunishLibMain.Init(pluginInterface, Name);
+            PunishLibMain.Init(pluginInterface, Name, new AboutPlugin() { Translator = "NiGuangOwO", Afdian = "https://afdian.com/a/NiGuangOwO" });
             new TickScheduler(delegate
             {
                 Config = EzConfig.Init<AdditionalConfiguration>(); // TODO temp solution, move it to main config later (maybe)

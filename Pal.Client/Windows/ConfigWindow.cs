@@ -34,7 +34,7 @@ namespace Pal.Client.Windows
     {
         private const string WindowId = "###PalPalaceConfig";
 
-        public OpenWindow OpenWindow { get; private set; } = OpenWindow.DeepDungeons;
+        public OpenWindow OpenWindow { get; private set; } = OpenWindow.关于;
 
         private readonly ILogger<ConfigWindow> _logger;
         private readonly WindowSystem _windowSystem;
@@ -185,10 +185,10 @@ namespace Pal.Client.Windows
                     {
                         if ((OpenWindow)window == OpenWindow.None) continue;
 
-                        if ((OpenWindow)window == OpenWindow.Export && !_configuration.HasRoleOnCurrentServer(RemoteApi.RemoteUrl, "export:run"))
+                        if ((OpenWindow)window == OpenWindow.导出 && !_configuration.HasRoleOnCurrentServer(RemoteApi.RemoteUrl, "export:run"))
                             continue;
 
-                        if (ImGui.Selectable($"{string.Join(" ", window.ToString().SplitCamelCase())}", OpenWindow == (OpenWindow)window))
+                        if (ImGui.Selectable($"{window}", OpenWindow == (OpenWindow)window))
                         {
                             OpenWindow = (OpenWindow)window;
                         }
@@ -204,22 +204,22 @@ namespace Pal.Client.Windows
                 {
                     switch (OpenWindow)
                     {
-                        case OpenWindow.DeepDungeons:
+                        case OpenWindow.深层迷宫:
                             DrawDeepDungeonItemsTab(ref save, ref saveAndClose);
                             break;
-                        case OpenWindow.Community:
+                        case OpenWindow.社区:
                             DrawCommunityTab(ref saveAndClose);
                             break;
-                        case OpenWindow.Import:
+                        case OpenWindow.导入:
                             DrawImportTab();
                             break;
-                        case OpenWindow.Export:
+                        case OpenWindow.导出:
                             DrawExportTab();
                             break;
                         case OpenWindow.Debug:
                             DrawDebugTab();
                             break;
-                        case OpenWindow.About:
+                        case OpenWindow.关于:
                             AboutTab.Draw(P.Name);
                             break;
                     }
@@ -657,11 +657,11 @@ namespace Pal.Client.Windows
     public enum OpenWindow
     {
         None,
-        DeepDungeons,
-        Community,
-        Import,
-        Export,
+        深层迷宫,
+        社区,
+        导入,
+        导出,
         Debug,
-        About
+        关于
     }
 }

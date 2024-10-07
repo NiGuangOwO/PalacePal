@@ -200,7 +200,7 @@ namespace Pal.Client.Rendering
                             radius = 2.0f,
                             color = Plugin.P.Config.ExitColor.ToUint(),
                             overlayVOffset = 0.76f,
-                            overlayText = Plugin.P.Config.ExitText ? "Passage" : "",
+                            overlayText = Plugin.P.Config.ExitText ? "传送装置" : "",
                             overlayFScale = P.Config.OverlayFScale,
                             refActorComparisonType = RefActorComparisonType.DataID,
                             refActorDataID = x,
