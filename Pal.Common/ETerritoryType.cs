@@ -68,6 +68,27 @@ namespace Pal.Common
         [Display(Order = 9)]
         EurekaOrthos_81_90 = 1107,
         [Display(Order = 10)]
-        EurekaOrthos_91_100 = 1108
+        EurekaOrthos_91_100 = 1108,
+
+        [Display(Order = 1)]
+        PilgrimsTraverse_1_10 = 1281,
+        [Display(Order = 2)]
+        PilgrimsTraverse_11_20 = 1282,
+        [Display(Order = 3)]
+        PilgrimsTraverse_21_30 = 1283,
+        [Display(Order = 4)]
+        PilgrimsTraverse_31_40 = 1284,
+        [Display(Order = 5)]
+        PilgrimsTraverse_41_50 = 1285,
+        [Display(Order = 6)]
+        PilgrimsTraverse_51_60 = 1286,
+        [Display(Order = 7)]
+        PilgrimsTraverse_61_70 = 1287,
+        [Display(Order = 8)]
+        PilgrimsTraverse_71_80 = 1288,
+        [Display(Order = 9)]
+        PilgrimsTraverse_81_90 = 1289,
+        [Display(Order = 10)]
+        PilgrimsTraverse_91_100 = 1290,
     }
 }
