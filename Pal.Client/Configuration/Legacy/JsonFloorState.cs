@@ -137,7 +137,7 @@ namespace Pal.Client.Configuration.Legacy
             foreach (ETerritoryType territory in typeof(ETerritoryType).GetEnumValues())
             {
                 // we never had markers for eureka orthos, so don't bother
-                if (territory > ETerritoryType.HeavenOnHigh_91_100)
+                if (territory > ETerritoryType.HeavenOnHigh_91_100 && territory < ETerritoryType.PilgrimsTraverse_1_10)
                     break;
 
                 JsonFloorState? localState = Load((ushort)territory);
