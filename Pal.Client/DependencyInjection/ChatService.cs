@@ -114,7 +114,7 @@ namespace Pal.Client.DependencyInjection
 
         private string GetLocalizedExtractedString(uint id)
         {
-            return _dataManager.GetExcelSheet<LogMessage>().GetRow(id).Text.ToDalamudString().ExtractText() ?? "Unknown";
+            return _dataManager.GetExcelSheet<LogMessage>().GetRow(id).Text.ToDalamudString().GetText() ?? "Unknown";
         }
 
         private sealed class LocalizedChatMessages

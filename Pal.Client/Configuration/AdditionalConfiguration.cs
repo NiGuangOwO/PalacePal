@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Pal.Client.Configuration
 {
-    public class AdditionalConfiguration : IEzConfig
+    public class AdditionalConfiguration
     {
         public bool GoldText = true;
         public bool SilverText = true;

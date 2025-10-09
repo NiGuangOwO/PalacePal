@@ -171,11 +171,11 @@ namespace Pal.Client.Windows
 
                     if (ThreadLoadImageHandler.TryGetTextureWrap(imagePath, out var logo))
                     {
-                        ImGuiEx.ImGuiLineCentered("###Logo", () => { ImGui.Image(logo.Handle, new(125f.Scale(), 125f.Scale())); });
+                        ImGuiEx.LineCentered("###Logo", () => { ImGui.Image(logo.Handle, new(125f.Scale(), 125f.Scale())); });
                     }
                     else
                     {
-                        ImGuiEx.ImGuiLineCentered("###Logo", () => { ImGui.Dummy(new(125f.Scale(), 125f.Scale())); });
+                        ImGuiEx.LineCentered("###Logo", () => { ImGui.Dummy(new(125f.Scale(), 125f.Scale())); });
                     }
 
                     ImGui.Spacing();
