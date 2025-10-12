@@ -51,6 +51,8 @@ namespace Pal.Client.Windows
                     ETerritoryType.HeavenOnHigh_91_100);
                 DrawDungeonStats("Eureka Orthos", Localization.EurekaOrthos, ETerritoryType.EurekaOrthos_1_10,
                     ETerritoryType.EurekaOrthos_91_100);
+                DrawDungeonStats("Pilgrim's Traverse", Localization.Pilgrim_s_Traverse, ETerritoryType.PilgrimsTraverse_1_10,
+                    ETerritoryType.PilgrimsTraverse_91_100);
             }
         }
 

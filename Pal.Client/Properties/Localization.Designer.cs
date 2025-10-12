@@ -799,6 +799,15 @@ namespace Pal.Client.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Pilgrim&apos;s Traverse.
+        /// </summary>
+        internal static string Pilgrim_s_Traverse {
+            get {
+                return ResourceManager.GetString("Pilgrim\'s Traverse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Accursed Hoard.
         /// </summary>
         internal static string pnAccursed_Hoard {
