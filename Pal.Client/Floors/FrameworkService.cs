@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
-using Dalamud.Game.ClientState.Objects.Types;
+﻿using Dalamud.Game.ClientState.Objects.Types;
+using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 using ECommons;
 using ECommons.Logging;
+using FFXIVClientStructs.FFXIV.Client.Game;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Pal.Client.Configuration;
@@ -17,6 +13,13 @@ using Pal.Client.Net;
 using Pal.Client.Rendering;
 using Pal.Client.Scheduled;
 using Pal.Common;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using static Pal.Client.Rendering.SplatoonRenderer;
 
 namespace Pal.Client.Floors
@@ -35,10 +38,12 @@ namespace Pal.Client.Floors
         private readonly RenderAdapter _renderAdapter;
         private readonly IObjectTable _objectTable;
         private readonly RemoteApi _remoteApi;
+        private readonly IDalamudPluginInterface _pluginInterface;
 
         internal Queue<IQueueOnFrameworkThread> EarlyEventQueue { get; } = new();
         internal Queue<IQueueOnFrameworkThread> LateEventQueue { get; } = new();
         internal ConcurrentQueue<nint> NextUpdateObjects { get; } = new();
+        private List<Action> _disposeActions = [];
 
         public FrameworkService(
             IServiceProvider serviceProvider,
@@ -52,7 +57,8 @@ namespace Pal.Client.Floors
             DebugState debugState,
             RenderAdapter renderAdapter,
             IObjectTable objectTable,
-            RemoteApi remoteApi)
+            RemoteApi remoteApi,
+            IDalamudPluginInterface pluginInterface)
         {
             _serviceProvider = serviceProvider;
             _logger = logger;
@@ -66,13 +72,33 @@ namespace Pal.Client.Floors
             _renderAdapter = renderAdapter;
             _objectTable = objectTable;
             _remoteApi = remoteApi;
+            _pluginInterface = pluginInterface;
 
             _framework.Update += OnUpdate;
             _configurationManager.Saved += OnSaved;
+            RegisterFunc(SendTrapsData);
+        }
+
+        private void RegisterFunc<TRet>(Func<TRet> func)
+        {
+            var p = _pluginInterface.GetIpcProvider<TRet>("PalacePal.Ipc");
+            p.RegisterFunc(func);
+            _disposeActions.Add(p.UnregisterFunc);
+        }
+
+        private unsafe List<Vector3> SendTrapsData()
+        {
+            MemoryTerritory? memoryTerritory = _floorService.GetTerritoryIfReady((ushort)GameMain.Instance()->CurrentTerritoryTypeId);
+            if (memoryTerritory == null)
+                return [];
+            else
+                return [.. memoryTerritory.Locations.Where(x => x.Type is MemoryLocation.EType.Trap).Select(x => x.Position)];
         }
 
         public void Dispose()
         {
+            foreach (var a in _disposeActions)
+                a();
             _framework.Update -= OnUpdate;
             _configurationManager.Saved -= OnSaved;
         }
@@ -140,6 +166,8 @@ namespace Pal.Client.Floors
 
                 if (_floorService.MergeEphemeralLocations(visibleEphemeralMarkers, recreateLayout))
                     RecreateEphemeralLayout();
+
+                SendTrapsData();
             }
             catch (Exception e)
             {
@@ -192,7 +220,7 @@ namespace Pal.Client.Floors
                             location.RenderElement.Color = desiredColor;
                             if (location.RenderElement2 != null)
                             {
-                                location.RenderElement2.Color = desiredColor == RenderData.ColorInvisible? RenderData.ColorInvisible : (desiredColor.ToVector4() with { W = 50f / 255f }).ToUint();
+                                location.RenderElement2.Color = desiredColor == RenderData.ColorInvisible ? RenderData.ColorInvisible : (desiredColor.ToVector4() with { W = 50f / 255f }).ToUint();
                             }
                         }
                     }
@@ -313,7 +341,7 @@ namespace Pal.Client.Floors
         private void CreateRenderElement(MemoryLocation location, List<SplatoonElement> elements, uint color, MarkerConfiguration config)
         {
             var element = _renderAdapter.CreateElement(location.Type, location.Position, color, config.Fill);
-            if(location.Type == MemoryLocation.EType.GoldCoffer)
+            if (location.Type == MemoryLocation.EType.GoldCoffer)
             {
                 /*{"Name":"Gold Treasure Coffer","type":1,"Enabled":false,"color":3355495679,"overlayBGColor":0,"overlayTextColor":4278242559,"overlayVOffset":0.6,"overlayFScale":1.3,"overlayText":" Gold Treasure Coffer","refActorPlaceholder":["<t>"],"refActorComparisonType":5,"includeOwnHitbox":true}
 
@@ -341,7 +369,7 @@ namespace Pal.Client.Floors
                     elements.Add(element2);
                 }
             }
-            else if(location.Type == MemoryLocation.EType.SilverCoffer)
+            else if (location.Type == MemoryLocation.EType.SilverCoffer)
             {
                 /*
                  * {"Name":"Silver Treasure Coffer","type":1,"Enabled":false,"color":3372220415,"overlayBGColor":0,"overlayTextColor":4294967295,"overlayVOffset":0.6,"overlayFScale":1.3,"overlayText":" Silver Treasure Coffer","refActorType":1,"includeOwnHitbox":true}
@@ -371,7 +399,7 @@ namespace Pal.Client.Floors
                     elements.Add(element2);
                 }
             }
-            else if(location.Type == MemoryLocation.EType.Trap)
+            else if (location.Type == MemoryLocation.EType.Trap)
             {
                 //{"Name":"Mimic Trap Coffer","type":1,"Enabled":false,"color":4278190335,"overlayBGColor":0,"overlayTextColor":4278190335,"overlayVOffset":0.6,"overlayFScale":1.3,"overlayText":" Mimic Trap Coffer","refActorPlaceholder":["<t>"],"FillStep":0.029,"refActorComparisonType":5,"includeOwnHitbox":true,"AdditionalRotation":0.43633232}
 
@@ -381,7 +409,7 @@ namespace Pal.Client.Floors
                 element.Delegate.Filled = false;
 
                 var element2 = _renderAdapter.CreateElement(location.Type, location.Position, color);
-                element2.Delegate.color = (P.Config.TrapColor with { W = 50f/255f }).ToUint();
+                element2.Delegate.color = (P.Config.TrapColor with { W = 50f / 255f }).ToUint();
                 element2.Delegate.Filled = true;
                 location.RenderElement2 = element2;
                 if (config.Show && config.Fill)
