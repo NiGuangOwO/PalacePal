@@ -14,14 +14,16 @@ namespace Pal.Client.Commands
     {
         private readonly Chat _chat;
         private readonly IClientState _clientState;
+        private readonly IObjectTable _objectTable;
         private readonly TerritoryState _territoryState;
         private readonly FloorService _floorService;
 
-        public PalNearCommand(Chat chat, IClientState clientState, TerritoryState territoryState,
+        public PalNearCommand(Chat chat, IClientState clientState, IObjectTable objectTable, TerritoryState territoryState,
             FloorService floorService)
         {
             _chat = chat;
             _clientState = clientState;
+            _objectTable = objectTable;
             _territoryState = territoryState;
             _floorService = floorService;
         }
@@ -44,7 +46,7 @@ namespace Pal.Client.Commands
             if (state == null)
                 return;
 
-            var playerPosition = _clientState.LocalPlayer?.Position;
+            var playerPosition = _objectTable.LocalPlayer?.Position;
             if (playerPosition == null)
                 return;
             _chat.Message($"Your position: {playerPosition}");
