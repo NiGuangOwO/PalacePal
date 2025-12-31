@@ -27,7 +27,7 @@ namespace Pal.Client.Rendering
 
         private readonly ILogger<SplatoonRenderer> _logger;
         private readonly DebugState _debugState;
-        private readonly IClientState _clientState;
+        private readonly IObjectTable _objectTable;
         private readonly Chat _chat;
 
         public SplatoonRenderer(
@@ -35,12 +35,12 @@ namespace Pal.Client.Rendering
             IDalamudPluginInterface pluginInterface,
             IDalamudPlugin dalamudPlugin,
             DebugState debugState,
-            IClientState clientState,
+            IObjectTable objectTable,
             Chat chat)
         {
             _logger = logger;
             _debugState = debugState;
-            _clientState = clientState;
+            _objectTable = objectTable;
             _chat = chat;
 
             _logger.LogInformation("Initializing splatoon");
@@ -115,7 +115,7 @@ namespace Pal.Client.Rendering
         {
             try
             {
-                Vector3? pos = _clientState.LocalPlayer?.Position;
+                Vector3? pos = _objectTable.LocalPlayer?.Position;
                 if (pos != null)
                 {
                     ResetLayer(ELayer.Test);
